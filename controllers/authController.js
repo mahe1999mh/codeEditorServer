@@ -29,7 +29,7 @@ const registerUser = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({msg: "Server error"});
+    res.status(500).json({msg: err});
   }
 };
 
@@ -37,19 +37,19 @@ const registerUser = async (req, res) => {
 // @route   POST /signin
 // @access  Public
 const signin = async (req, res) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({email});
-
-    if (!user) return res.status(400).json({msg: "Invalid credentials"});
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({msg: "Invalid credentials"});
+    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
-    const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
+
     res.json({
       msg: "Login successful",
       token,
@@ -63,5 +63,6 @@ const signin = async (req, res) => {
     res.status(500).json({msg: e});
   }
 };
+
 
 module.exports = {registerUser, signin};
